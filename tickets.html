@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambola Tickets | Generate & Print 3×9 Tickets</title>
+    <meta name="description" content="Generate and print standard Tambola/Housie 3×9 tickets with 15 numbers each. Add player names, batch history, one-click print.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container"></div>
+    </nav>
+
+    <main>
+        <div class="container">
+
+            <section class="section-block">
+                <div class="card">
+                    <div class="card-title">🎫 Printable Tickets</div>
+                    <p class="card-sub">
+                        Generate standard 3×9 Tambola tickets (15 numbers each). Add a player name to each ticket if you like.
+                    </p>
+
+                    <div class="ticket-controls no-print">
+                        <div class="control-group">
+                            <label>How many tickets</label>
+                            <input type="number" class="ticket-input" id="ticketCount" value="6" min="1" max="30">
+                        </div>
+                        <div class="control-group">
+                            <label>Player name (optional)</label>
+                            <input type="text" id="playerName" placeholder="e.g. Rahul" style="width:160px;">
+                        </div>
+                        <button class="btn btn-primary" onclick="generateTickets()">Generate Tickets</button>
+                        <button class="btn btn-accent" onclick="fillNames()">👥 Fill All Names</button>
+                        <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+                    </div>
+
+                    <div class="tickets-container print-area" id="ticketsContainer"></div>
+                </div>
+            </section>
+
+            <section class="section-block">
+                <div class="card">
+                    <div class="card-title">🕘 Recent Batches</div>
+                    <p class="card-sub">Your last 5 generated batches, saved on this device.</p>
+                    <div id="batchList">
+                        <span class="history-empty">No batches yet — generate your first set of tickets above.</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer></footer>
+
+    <script src="js/tickets.js"></script>
+    <script src="js/common.js"></script>
+</body>
+</html>

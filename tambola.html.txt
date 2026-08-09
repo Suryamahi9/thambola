@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambola Number Generator | Housie / Bingo 90 Caller with Voice</title>
+    <meta name="description" content="Free online Tambola/Housie number caller with voice in English, Hindi & Telugu. Auto & manual modes, printable tickets, digital board. No signup needed.">
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6C2BD9;
+            --primary-dark: #4A1A9C;
+            --primary-light: #9B5DE5;
+            --accent: #00C896;
+            --accent-dark: #00A87A;
+            --called: #3B82F6;
+            --called-bg: #DBEAFE;
+            --last: #10B981;
+            --last-bg: #D1FAE5;
+            --bg: #F3F0FF;
+            --surface: #FFFFFF;
+            --text: #1E1B2E;
+            --text-muted: #6B7280;
+            --border: #E5E0F0;
+            --shadow: 0 4px 24px rgba(108, 43, 217, 0.10);
+            --shadow-lg: 0 8px 40px rgba(108, 43, 217, 0.16);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: #fff;
+            padding: 32px 16px 28px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px; left: 50%;
+            transform: translateX(-50%);
+            width: 60px; height: 60px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+        header h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+        header p { font-size: 0.95rem; opacity: 0.9; margin-top: 4px; }
+
+        /* ===== MAIN ===== */
+        main { padding: 24px 0 48px; }
+        section { margin-bottom: 28px; }
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== CONTROLS PANEL ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 6px; }
+        .control-group label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+        .toggle-group {
+            display: flex;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            gap: 4px;
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-muted);
+        }
+        .toggle-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(108, 43, 217, 0.3);
+        }
+        select, input[type="number"] {
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* ===== ACTION BUTTONS ===== */
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            flex: 1;
+            min-width: 140px;
+        }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-accent {
+            background: var(--accent);
+            color: #fff;
+            flex: 1;
+            min-width: 140px;
+        }
+        .btn-accent:hover { background: var(--accent-dark); transform: translateY(-1px); }
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-danger {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .btn-danger:hover { background: #FECACA; }
+        .btn:active { transform: translateY(0); }
+
+        /* ===== STATS / LAST NUMBER ===== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+
+        .last-number-display {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius);
+            padding: 28px 20px;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .last-number-display::before {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            width: 80px; height: 80px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .last-number-display .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.85;
+            margin-bottom: 6px;
+        }
+        .last-number-display .number {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+        .last-number-display .number.anim {
+            animation: pop 0.4s ease;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ===== AUDIO WARNING ===== */
+        .audio-warning {
+            background: #FEF3C7;
+            border: 1px solid #FCD34D;
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            color: #92400E;
+            margin-top: 12px;
+            display: none;
+        }
+        .audio-warning.show { display: block; }
+
+        /* ===== TAMBOLA BOARD ===== */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+        }
+        .board-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            user-select: none;
+        }
+        .board-cell:hover {
+            border-color: var(--primary-light);
+            transform: scale(1.05);
+        }
+        .board-cell.called {
+            background: var(--called-bg);
+            color: var(--called);
+            border-color: var(--called);
+        }
+        .board-cell.last {
+            background: var(--last-bg);
+            color: var(--last);
+            border-color: var(--last);
+            transform: scale(1.08);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+        .tip-box {
+            margin-top: 14px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: var(--bg);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--primary-light);
+        }
+
+        /* ===== TICKETS ===== */
+        .ticket-controls {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .ticket-controls .control-group { flex: 0; }
+        .ticket-input {
+            width: 80px;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            text-align: center;
+        }
+        .tickets-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 16px;
+        }
+        .ticket {
+            background: #fff;
+            border: 2px solid var(--text);
+            border-radius: 8px;
+            padding: 12px;
+            page-break-inside: avoid;
+        }
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 2px;
+        }
+        .ticket-cell {
+            aspect-ratio: 1.1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #D1D5DB;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: #fff;
+        }
+        .ticket-cell.empty { background: #F3F0FF; border-color: #F3F0FF; }
+
+        /* ===== INFO SECTIONS ===== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .info-block h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        .info-block ul { list-style: none; padding: 0; }
+        .info-block li {
+            padding: 5px 0 5px 24px;
+            position: relative;
+            font-size: 0.9rem;
+        }
+        .info-block li::before {
+            content: '▸';
+            position: absolute;
+            left: 8px;
+            color: var(--primary-light);
+        }
+
+        /* ===== FAQ ===== */
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 14px 0;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q {
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .faq-q::after {
+            content: '+';
+            font-size: 1.3rem;
+            color: var(--primary);
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+        .faq-item.open .faq-q::after { transform: rotate(45deg); }
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .faq-item.open .faq-a { max-height: 200px; padding-top: 8px; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--text);
+            color: #fff;
+            text-align: center;
+            padding: 24px 16px;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 680px) {
+            header h1 { font-size: 1.4rem; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr; }
+            .last-number-display .number { font-size: 3.5rem; }
+            .board { gap: 4px; }
+            .board-cell { font-size: 0.8rem; border-radius: 6px; }
+            .tickets-container { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: 1fr; }
+            .actions .btn { min-width: 120px; font-size: 0.85rem; padding: 10px 14px; }
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            body * { visibility: hidden; }
+            .print-area, .print-area * { visibility: visible; }
+            .print-area {
+                position: absolute;
+                left: 0; top: 0;
+                width: 100%;
+                padding: 20px;
+            }
+            .ticket { border: 2px solid #000; page-break-inside: avoid; margin-bottom: 12px; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>🎯 Tambola Number Generator</h1>
+            <p>Housie / Bingo 90 Caller with Voice (English · Hindi · Telugu)</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+
+            <!-- ===== GAME CONTROLS ===== -->
+            <section>
+                <div class="card">
+                    <div class="card-title">🎮 Game Controls</div>
+
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label>Mode</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" id="modeManual" onclick="setMode('manual')">Manual</button>
+                                <button class="toggle-btn" id="modeAuto" onclick="setMode('auto')">Auto</button>
+                            </div>
+                        </div>
+                        <div class="control-group" id="speedGroup" style="display:none;">
+                            <label>Auto Speed</label>
+                            <select id="speedSelect" onchange="updateSpeed()">
+                                <option value="3000">Every 3s</option>
+                                <option value="4000" selected>Every 4s</option>
+                                <option value="5000">Every 5s</option>
+                                <option value="7000">Every 7s</option>
+                                <option value="10000">Every 10s</option>
+                                <option value="15000">Every 15s</option>
+                                <option value="20000">Every 20s</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Audio Language</label>
+                            <select id="langSelect" onchange="changeLanguage()">
+                                <option value="en-IN">English (India)</option>
+                                <option value="hi-IN">हिंदी (Hindi)</option>
+                                <option value="te-IN">తెలుగు (Telugu)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" id="nextBtn" onclick="callNext()">▶ Next Number</button>
+                        <button class="btn btn-accent" id="autoBtn" onclick="toggleAuto()" style="display:none;">⏵ Start Auto</button>
+                        <button class="btn btn-secondary" onclick="repeatLast()">🔊 Repeat Last</button>
+                        <button class="btn btn-danger" onclick="resetGame()">↻ Reset Game</button>
+                    </div>
+
+                    <div class="audio-warning" id="audioWarning">
+                        ⚠️ Audio not available. Try Chrome, Edge, or Safari. Some devices may not support voice features.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== LAST NUMBER & STATS ===== -->
+            <section>
+                <div class="last-number-display">
+                    <div class="label">Last Number</div>
+                    <div class="number" id="lastNumber">–</div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-label">Called</div>
+                        <div class="stat-value" id="calledCount">0 / 90</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Remaining</div>
+                        <div class="stat-value" id="remainingCount">90</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Status</div>
+                        <div class="stat-value" id="gameStatus" style="font-size:1rem;">Ready</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== TAMBOLA BOARD ===== -->
+            <section>
+                <div class="card">
+                    <div class="card-title">🔢 Tambola Board (1 – 90)</div>
+                    <div class="board" id="board"></div>
+                    <div class="tip-box">
+                        💡 Tip: Tap any number to hear it again or manually highlight it for visual tracking.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== PRINTABLE TICKETS ===== -->
+            <section>
+                <div class="card">
+                    <div class="card-title">🎫 Printable Tickets</div>
+                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:14px;">
+                        Generate standard 3×9 Tambola tickets (15 numbers each) for your players to print.
+                    </p>
+
+                    <div class="ticket-controls no-print">
+                        <div class="control-group">
+                            <label>How many tickets</label>
+                            <input type="number" class="ticket-input" id="ticketCount" value="6" min="1" max="30">
+                        </div>
+                        <button class="btn btn-primary" onclick="generateTickets()">Generate Tickets</button>
+                        <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+                    </div>
+
+                    <div class="tickets-container print-area" id="ticketsContainer"></div>
+                </div>
+            </section>
+
+            <!-- ===== HOW TO USE ===== -->
+            <section>
+                <div class="card">
+                    <div class="card-title">📖 How to Use Tambola Number Generator</div>
+
+                    <h3 style="margin-bottom:6px; color:var(--primary);">What is Tambola?</h3>
+                    <p style="font-size:0.9rem; margin-bottom:16px;">
+                        Tambola, also known as Housie or Indian Bingo, is a popular lottery-style game played across India during kitty parties, family gatherings, and social events. This free online tool helps you host a Tambola game without needing physical tickets or manual number calling.
+                    </p>
+
+                    <div class="info-grid">
+                        <div class="info-block">
+                            <h3>✨ Features</h3>
+                            <ul>
+                                <li><strong>Manual Mode:</strong> Call numbers one at a time</li>
+                                <li><strong>Auto Mode:</strong> Automatic calling (3–20s intervals)</li>
+                                <li><strong>Multilingual Audio:</strong> English, Hindi & Telugu</li>
+                                <li><strong>Clear Digital Board:</strong> Visual highlight of called numbers</li>
+                                <li><strong>Mobile-Friendly:</strong> Works on all devices</li>
+                                <li><strong>No Ads:</strong> Completely free</li>
+                            </ul>
+                        </div>
+                        <div class="info-block">
+                            <h3>🎮 How to Play</h3>
+                            <ul>
+                                <li>Select Manual or Auto mode</li>
+                                <li>Choose audio language</li>
+                                <li>Adjust auto speed if needed</li>
+                                <li>Click Next Number or Start Auto</li>
+                                <li>Players mark numbers on their tickets</li>
+                                <li>Use Repeat Last to hear again</li>
+                                <li>Click Reset to start over</li>
+                            </ul>
+                        </div>
+                        <div class="info-block">
+                            <h3>💡 Pro Tips</h3>
+                            <ul>
+                                <li>Use fullscreen on a TV (F11)</li>
+                                <li>Keep device stable during auto mode</li>
+                                <li>Test audio before starting</li>
+                                <li>Blue = called, Green = last called</li>
+                            </ul>
+                        </div>
+                        <div class="info-block">
+                            <h3>🎉 Perfect For</h3>
+                            <ul>
+                                <li>Kitty parties & social gatherings</li>
+                                <li>Family game nights</li>
+                                <li>Housing society events</li>
+                                <li>School & college functions</li>
+                                <li>Online parties & Zoom meetings</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== FAQ ===== -->
+            <section>
+                <div class="card">
+                    <div class="card-title">❓ Frequently Asked Questions</div>
+                    <div id="faqList"></div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>🎯 Tambola Number Generator — Free Housie/Bingo Caller with Voice</p>
+        <p style="margin-top:4px; font-size:0.8rem; opacity:0.7;">Runs entirely in your browser · No signup · No ads</p>
+    </footer>
+
+    <script>
+        // ===== STATE =====
+        const state = {
+            mode: 'manual',
+            language: 'en-IN',
+            speed: 4000,
+            calledNumbers: [],
+            remainingNumbers: [],
+            lastNumber: null,
+            autoTimer: null,
+            isAutoRunning: false,
+            voicesReady: false
+        };
+
+        // Initialize remaining numbers 1-90
+        for (let i = 1; i <= 90; i++) state.remainingNumbers.push(i);
+
+        // ===== HINDI NUMBER WORDS =====
+        const hindiNumbers = {
+            1:'एक',2:'दो',3:'तीन',4:'चार',5:'पांच',6:'छह',7:'सात',8:'आठ',9:'नौ',10:'दस',
+            11:'ग्यारह',12:'बारह',13:'तेरह',14:'चौदह',15:'पंद्रह',16:'सोलह',17:'सत्रह',
+            18:'अठारह',19:'उन्नीस',20:'बीस',21:'इक्कीस',22:'बाईस',23:'तेईस',24:'चौबीस',
+            25:'पच्चीस',26:'छब्बीस',27:'सत्ताईस',28:'अट्ठाईस',29:'उनतीस',30:'तीस',
+            31:'इकतीस',32:'बत्तीस',33:'तैंतीस',34:'चौंतीस',35:'पैंतीस',36:'छत्तीस',
+            37:'सैंतीस',38:'अड़तीस',39:'उनतालीस',40:'चालीस',41:'इकतालीस',42:'बयालीस',
+            43:'तैंतालीस',44:'चवालीस',45:'पैंतालीस',46:'छियालीस',47:'सैंतालीस',
+            48:'अड़तालीस',49:'उनचास',50:'पचास',51:'इक्यावन',52:'बावन',53:'तिरपन',
+            54:'चौवन',55:'पचपन',56:'छप्पन',57:'सत्तावन',58:'अट्ठावन',59:'उनसठ',
+            60:'साठ',61:'इकसठ',62:'बासठ',63:'तिरसठ',64:'चौंसठ',65:'पैंसठ',66:'छियासठ',
+            67:'सड़सठ',68:'अड़सठ',69:'उनहत्तर',70:'सत्तर',71:'इकहत्तर',72:'बहत्तर',
+            73:'तिहत्तर',74:'चौहत्तर',75:'पचहत्तर',76:'छिहत्तर',77:'सतहत्तर',
+            78:'अठहत्तर',79:'उन्यासी',80:'अस्सी',81:'इक्यासी',82:'बयासी',83:'तिरासी',
+            84:'चौरासी',85:'पचासी',86:'छियासी',87:'सत्तासी',88:'अट्ठासी',89:'नवासी',90:'नब्बे'
+        };
+
+        // ===== TELUGU NUMBER WORDS =====
+        const teluguNumbers = {
+            1:'ఒకటి',2:'రెండు',3:'మూడు',4:'నాలుగు',5:'ఐదు',6:'ఆరు',7:'ఏడు',8:'ఎనిమిది',
+            9:'తొమ్మిది',10:'పది',11:'పదకొండు',12:'పన్నెండు',13:'పదమూడు',14:'పద్నాలుగు',
+            15:'పదిహేను',16:'పదహారు',17:'పదిహేడు',18:'పద్దెనిమిది',19:'పందొమ్మిది',
+            20:'ఇరవై',21:'ఇరవై ఒకటి',22:'ఇరవై రెండు',23:'ఇరవై మూడు',24:'ఇరవై నాలుగు',
+            25:'ఇరవై ఐదు',26:'ఇరవై ఆరు',27:'ఇరవై ఏడు',28:'ఇరవై ఎనిమిది',29:'ఇరవై తొమ్మిది',
+            30:'ముప్పై',31:'ముప్పై ఒకటి',32:'ముప్పై రెండు',33:'ముప్పై మూడు',34:'ముప్పై నాలుగు',
+            35:'ముప్పై ఐదు',36:'ముప్పై ఆరు',37:'ముప్పై ఏడు',38:'ముప్పై ఎనిమిది',39:'ముప్పై తొమ్మిది',
+            40:'నలభై',41:'నలభై ఒకటి',42:'నలభై రెండు',43:'నలభై మూడు',44:'నలభై నాలుగు',
+            45:'నలభై ఐదు',46:'నలభై ఆరు',47:'నలభై ఏడు',48:'నలభై ఎనిమిది',49:'నలభై తొమ్మిది',
+            50:'యాభై',51:'యాభై ఒకటి',52:'యాభై రెండు',53:'యాభై మూడు',54:'యాభై నాలుగు',
+            55:'యాభై ఐదు',56:'యాభై ఆరు',57:'యాభై ఏడు',58:'యాభై ఎనిమిది',59:'యాభై తొమ్మిది',
+            60:'అరవై',61:'అరవై ఒకటి',62:'అరవై రెండు',63:'అరవై మూడు',64:'అరవై నాలుగు',
+            65:'అరవై ఐదు',66:'అరవై ఆరు',67:'అరవై ఏడు',68:'అరవై ఎనిమిది',69:'అరవై తొమ్మిది',
+            70:'డెబ్భై',71:'డెబ్భై ఒకటి',72:'డెబ్భై రెండు',73:'డెబ్భై మూడు',74:'డెబ్భై నాలుగు',
+            75:'డెబ్భై ఐదు',76:'డెబ్భై ఆరు',77:'డెబ్భై ఏడు',78:'డెబ్భై ఎనిమిది',79:'డెబ్భై తొమ్మిది',
+            80:'ఎనభై',81:'ఎనభై ఒకటి',82:'ఎనభై రెండు',83:'ఎనభై మూడు',84:'ఎనభై నాలుగు',
+            85:'ఎనభై ఐదు',86:'ఎనభై ఆరు',87:'ఎనభై ఏడు',88:'ఎనభై ఎనిమిది',89:'ఎనభై తొమ్మిది',
+            90:'తొంభై'
+        };
+
+        // ===== INIT BOARD =====
+        function initBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            for (let i = 1; i <= 90; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'board-cell';
+                cell.id = 'cell-' + i;
+                cell.textContent = i;
+                cell.onclick = () => manualMark(i);
+                board.appendChild(cell);
+            }
+        }
+
+        // ===== MODE TOGGLE =====
+        function setMode(mode) {
+            state.mode = mode;
+            document.getElementById('modeManual').classList.toggle('active', mode === 'manual');
+            document.getElementById('modeAuto').classList.toggle('active', mode === 'auto');
+            document.getElementById('speedGroup').style.display = mode === 'auto' ? 'flex' : 'none';
+            document.getElementById('nextBtn').style.display = mode === 'manual' ? 'inline-flex' : 'none';
+            document.getElementById('autoBtn').style.display = mode === 'auto' ? 'inline-flex' : 'none';
+
+            if (mode === 'manual' && state.isAutoRunning) {
+                stopAuto();
+            }
+            updateStatus();
+        }
+
+        // ===== SPEED =====
+        function updateSpeed() {
+            state.speed = parseInt(document.getElementById('speedSelect').value);
+            if (state.isAutoRunning) {
+                stopAuto();
+                startAuto();
+            }
+        }
+
+        // ===== LANGUAGE =====
+        function changeLanguage() {
+            state.language = document.getElementById('langSelect').value;
+        }
+
+        // ===== VOICE INIT =====
+        let availableVoices = [];
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                availableVoices = speechSynthesis.getVoices();
+                state.voicesReady = availableVoices.length > 0;
+            }
+        }
+        if ('speechSynthesis' in window) {
+            loadVoices();
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        // ===== SPEAK =====
+        function speakNumber(num) {
+            if (!('speechSynthesis' in window)) {
+                document.getElementById('audioWarning').classList.add('show');
+                return;
+            }
+
+            let text;
+            const lang = state.language;
+
+            if (lang === 'hi-IN') {
+                text = hindiNumbers[num] || String(num);
+            } else if (lang === 'te-IN') {
+                text = teluguNumbers[num] || String(num);
+            } else {
+                text = String(num);
+            }
+
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.85;
+            utterance.pitch = 1;
+
+            // Find matching voice
+            const matchingVoice = availableVoices.find(v => v.lang === lang);
+            if (matchingVoice) {
+                utterance.voice = matchingVoice;
+            } else {
+                // Try partial match
+                const langCode = lang.split('-')[0];
+                const partialMatch = availableVoices.find(v => v.lang.startsWith(langCode));
+                if (partialMatch) utterance.voice = partialMatch;
+            }
+
+            speechSynthesis.speak(utterance);
+        }
+
+        // ===== CALL NEXT NUMBER =====
+        function callNext() {
+            if (state.remainingNumbers.length === 0) {
+                updateStatus('Game Over!');
+                stopAuto();
+                return;
+            }
+
+            // Pick random number
+            const randomIndex = Math.floor(Math.random() * state.remainingNumbers.length);
+            const num = state.remainingNumbers.splice(randomIndex, 1)[0];
+            state.calledNumbers.push(num);
+
+            // Remove last class from previous cell
+            if (state.lastNumber) {
+                const prevCell = document.getElementById('cell-' + state.lastNumber);
+                if (prevCell) prevCell.classList.remove('last');
+            }
+
+            // Update board
+            const cell = document.getElementById('cell-' + num);
+            if (cell) {
+                cell.classList.add('called', 'last');
+            }
+
+            // Update last number display
+            state.lastNumber = num;
+            const lastNumEl = document.getElementById('lastNumber');
+            lastNumEl.textContent = num;
+            lastNumEl.classList.remove('anim');
+            void lastNumEl.offsetWidth; // trigger reflow
+            lastNumEl.classList.add('anim');
+
+            // Update stats
+            updateStats();
+
+            // Speak
+            speakNumber(num);
+
+            updateStatus();
+        }
+
+        // ===== MANUAL MARK (tap board cell) =====
+        function manualMark(num) {
+            if (state.calledNumbers.includes(num)) {
+                // Already called - repeat voice
+                speakNumber(num);
+            } else {
+                // Not called yet - call it
+                const idx = state.remainingNumbers.indexOf(num);
+                if (idx !== -1) {
+                    state.remainingNumbers.splice(idx, 1);
+                    state.calledNumbers.push(num);
+
+                    if (state.lastNumber) {
+                        const prevCell = document.getElementById('cell-' + state.lastNumber);
+                        if (prevCell) prevCell.classList.remove('last');
+                    }
+
+                    const cell = document.getElementById('cell-' + num);
+                    if (cell) cell.classList.add('called', 'last');
+
+                    state.lastNumber = num;
+                    const lastNumEl = document.getElementById('lastNumber');
+                    lastNumEl.textContent = num;
+                    lastNumEl.classList.remove('anim');
+                    void lastNumEl.offsetWidth;
+                    lastNumEl.classList.add('anim');
+
+                    updateStats();
+                    speakNumber(num);
+                    updateStatus();
+                }
+            }
+        }
+
+        // ===== REPEAT LAST =====
+        function repeatLast() {
+            if (state.lastNumber) {
+                speakNumber(state.lastNumber);
+            }
+        }
+
+        // ===== AUTO MODE =====
+        function toggleAuto() {
+            if (state.isAutoRunning) {
+                stopAuto();
+            } else {
+                startAuto();
+            }
+        }
+
+        function startAuto() {
+            if (state.remainingNumbers.length === 0) {
+                updateStatus('Game Over!');
+                return;
+            }
+            state.isAutoRunning = true;
+            document.getElementById('autoBtn').textContent = '⏸ Pause Auto';
+            callNext();
+            state.autoTimer = setInterval(() => {
+                if (state.remainingNumbers.length === 0) {
+                    stopAuto();
+                    updateStatus('Game Over!');
+                    return;
+                }
+                callNext();
+            }, state.speed);
+            updateStatus('Auto Running');
+        }
+
+        function stopAuto() {
+            state.isAutoRunning = false;
+            if (state.autoTimer) {
+                clearInterval(state.autoTimer);
+                state.autoTimer = null;
+            }
+            document.getElementById('autoBtn').textContent = '⏵ Start Auto';
+            updateStatus();
+        }
+
+        // ===== RESET =====
+        function resetGame() {
+            stopAuto();
+            state.calledNumbers = [];
+            state.remainingNumbers = [];
+            state.lastNumber = null;
+            for (let i = 1; i <= 90; i++) state.remainingNumbers.push(i);
+
+            // Reset board
+            document.querySelectorAll('.board-cell').forEach(cell => {
+                cell.classList.remove('called', 'last');
+            });
+
+            // Reset display
+            document.getElementById('lastNumber').textContent = '–';
+            updateStats();
+            updateStatus();
+        }
+
+        // ===== UPDATE STATS =====
+        function updateStats() {
+            const called = state.calledNumbers.length;
+            document.getElementById('calledCount').textContent = called + ' / 90';
+            document.getElementById('remainingCount').textContent = state.remainingNumbers.length;
+        }
+
+        function updateStatus(forceText) {
+            const el = document.getElementById('gameStatus');
+            if (forceText) {
+                el.textContent = forceText;
+                return;
+            }
+            if (state.remainingNumbers.length === 0) {
+                el.textContent = 'Game Over';
+            } else if (state.isAutoRunning) {
+                el.textContent = 'Auto Running';
+            } else if (state.calledNumbers.length > 0) {
+                el.textContent = 'In Progress';
+            } else {
+                el.textContent = 'Ready';
+            }
+        }
+
+        // ===== TICKET GENERATION =====
+        function generateTicket() {
+            // 3 rows x 9 cols grid
+            const grid = [
+                [null, null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null, null, null]
+            ];
+
+            // Column ranges: col 0 -> 1-9, col 1 -> 10-19, ..., col 8 -> 80-90
+            const colRanges = [];
+            for (let c = 0; c < 9; c++) {
+                const start = c * 10 + 1;
+                const end = c === 8 ? 90 : (c + 1) * 10;
+                colRanges.push({ start, end });
+            }
+
+            // Step 1: Column counts (1-3 each, total = 15)
+            const colCounts = [1, 1, 1, 1, 1, 1, 1, 1, 1]; // 9 base
+            let remaining = 6;
+            while (remaining > 0) {
+                const col = Math.floor(Math.random() * 9);
+                if (colCounts[col] < 3) {
+                    colCounts[col]++;
+                    remaining--;
+                }
+            }
+
+            // Step 2: Assign rows to columns (each row gets exactly 5)
+            const rowCounts = [0, 0, 0];
+            const colRows = [[], [], [], [], [], [], [], [], []];
+
+            // Process columns with higher counts first
+            const colOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8].sort((a, b) => colCounts[b] - colCounts[a]);
+
+            for (const col of colOrder) {
+                const count = colCounts[col];
+                // Available rows (count < 5)
+                let avail = [0, 1, 2].filter(r => rowCounts[r] < 5);
+                // Sort by row count ascending (prefer less filled)
+                avail.sort((a, b) => rowCounts[a] - rowCounts[b]);
+
+                const chosen = avail.slice(0, count);
+                for (const r of chosen) {
+                    colRows[col].push(r);
+                    rowCounts[r]++;
+                }
+            }
+
+            // Verify
+            if (rowCounts[0] !== 5 || rowCounts[1] !== 5 || rowCounts[2] !== 5) {
+                // Retry
+                return generateTicket();
+            }
+
+            // Step 3: Fill numbers
+            for (let col = 0; col < 9; col++) {
+                const { start, end } = colRanges[col];
+                const count = colCounts[col];
+                const pool = [];
+                for (let n = start; n <= end; n++) pool.push(n);
+
+                // Shuffle
+                for (let i = pool.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [pool[i], pool[j]] = [pool[j], pool[i]];
+                }
+
+                const nums = pool.slice(0, count).sort((a, b) => a - b);
+
+                for (let i = 0; i < colRows[col].length; i++) {
+                    grid[colRows[col][i]][col] = nums[i];
+                }
+            }
+
+            return grid;
+        }
+
+        function generateTickets() {
+            const count = Math.max(1, Math.min(30, parseInt(document.getElementById('ticketCount').value) || 6));
+            const container = document.getElementById('ticketsContainer');
+            container.innerHTML = '';
+
+            for (let t = 0; t < count; t++) {
+                const grid = generateTicket();
+                const ticketEl = document.createElement('div');
+                ticketEl.className = 'ticket';
+
+                const header = document.createElement('div');
+                header.className = 'ticket-header';
+                header.innerHTML = '<span>Tambola Ticket</span><span>#' + String(t + 1).padStart(2, '0') + '</span>';
+                ticketEl.appendChild(header);
+
+                const gridEl = document.createElement('div');
+                gridEl.className = 'ticket-grid';
+
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 9; c++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'ticket-cell';
+                        if (grid[r][c] === null) {
+                            cell.classList.add('empty');
+                        } else {
+                            cell.textContent = grid[r][c];
+                        }
+                        gridEl.appendChild(cell);
+                    }
+                }
+
+                ticketEl.appendChild(gridEl);
+                container.appendChild(ticketEl);
+            }
+        }
+
+        // ===== FAQ DATA =====
+        const faqData = [
+            {
+                q: 'How do I generate printable tickets?',
+                a: 'Use the "Printable Tickets" section above: choose how many tickets you need and click Generate, then Print. Each ticket is a standard 3×9 grid with 15 numbers.'
+            },
+            {
+                q: 'Does it call numbers out loud?',
+                a: 'Yes. Auto and manual modes both speak each number using your device\'s voice, in English, Hindi or Telugu. Some devices may not have Hindi/Telugu voices installed.'
+            },
+            {
+                q: 'Is it really free?',
+                a: 'Yes — unlimited number calling and ticket generation, no sign-up, and everything runs in your browser.'
+            },
+            {
+                q: 'What\'s the difference between Manual and Auto mode?',
+                a: 'Manual lets you call each number when you press "Next Number". Auto calls numbers automatically at the speed you set (3–20 seconds).'
+            },
+            {
+                q: 'Can I use this on my phone?',
+                a: 'Yes! The tool is fully responsive and works on phones, tablets, and desktops. For best audio results, use Chrome, Edge, or Safari.'
+            },
+            {
+                q: 'How do I get Hindi or Telugu voice to work?',
+                a: 'Hindi and Telugu voices depend on your device\'s installed language packs. On Android, go to Settings → Languages → Text-to-speech. On iOS, go to Settings → Accessibility → Spoken Content → Voices.'
+            }
+        ];
+
+        function renderFAQs() {
+            const list = document.getElementById('faqList');
+            list.innerHTML = '';
+            faqData.forEach((faq, i) => {
+                const item = document.createElement('div');
+                item.className = 'faq-item';
+                item.innerHTML = '<div class="faq-q">' + faq.q + '</div><div class="faq-a">' + faq.a + '</div>';
+                item.querySelector('.faq-q').onclick = () => {
+                    item.classList.toggle('open');
+                };
+                list.appendChild(item);
+            });
+        }
+
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', (e) => {
+            // Space or Enter = Next Number
+            if (e.code === 'Space' || e.code === 'Enter') {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
+                    e.preventDefault();
+                    if (state.mode === 'auto') {
+                        toggleAuto();
+                    } else {
+                        callNext();
+                    }
+                }
+            }
+            // R = Reset
+            if (e.code === 'KeyR' && e.target.tagName !== 'INPUT') {
+                resetGame();
+            }
+        });
+
+        // ===== INIT =====
+        initBoard();
+        renderFAQs();
+        generateTickets(); // Generate initial tickets
+    </script>
+</body>
+</html>
