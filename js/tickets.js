@@ -21,8 +21,8 @@ function tryGenerateTicket() {
 
     const colRanges = [];
     for (let c = 0; c < 9; c++) {
-        const start = c * 10 + 1;
-        const end = c === 8 ? 90 : (c + 1) * 10;
+        const start = c === 0 ? 1 : c * 10;
+        const end = c === 8 ? 90 : c * 10 + 9;
         colRanges.push({ start, end });
     }
 
@@ -248,8 +248,8 @@ function generateStrip() {
 
         // Distribute each column's number range across the 6 tickets
         for (let c = 0; c < 9 && ok; c++) {
-            const start = c * 10 + 1;
-            const end = c === 8 ? 90 : (c + 1) * 10;
+            const start = c === 0 ? 1 : c * 10;
+            const end = c === 8 ? 90 : c * 10 + 9;
             const pool = [];
             for (let n = start; n <= end; n++) pool.push(n);
             shuffle(pool);
