@@ -102,13 +102,9 @@ function initBoard() {
         cell.textContent = i;
         board.appendChild(cell);
     }
-    // Event delegation: one listener on the board — reliable even if cells change.
-    board.onclick = (e) => {
-        const cell = e.target.closest('.board-cell');
-        if (cell) {
-            manualMark(parseInt(cell.id.split('-')[1], 10));
-        }
-    };
+    // Board is display-only — numbers are drawn randomly via Next/Auto mode
+    // so no one can tamper with the game by pressing numbers.
+    board.onclick = null;
 }
 
 function restoreBoard() {
@@ -223,36 +219,6 @@ function callNext() {
 
     const randomIndex = Math.floor(Math.random() * state.remainingNumbers.length);
     const num = state.remainingNumbers.splice(randomIndex, 1)[0];
-    state.calledNumbers.push(num);
-
-    if (state.lastNumber) {
-        const prevCell = document.getElementById('cell-' + state.lastNumber);
-        if (prevCell) prevCell.classList.remove('last');
-    }
-
-    const cell = document.getElementById('cell-' + num);
-    if (cell) cell.classList.add('called', 'last');
-
-    state.lastNumber = num;
-    flashLastNumber(num);
-
-    updateStats();
-    renderHistory();
-    speakNumber(num);
-    updateStatus();
-    saveGame();
-}
-
-// ===== MANUAL MARK =====
-function manualMark(num) {
-    if (state.calledNumbers.includes(num)) {
-        speakNumber(num);
-        return;
-    }
-    const idx = state.remainingNumbers.indexOf(num);
-    if (idx === -1) return;
-
-    state.remainingNumbers.splice(idx, 1);
     state.calledNumbers.push(num);
 
     if (state.lastNumber) {

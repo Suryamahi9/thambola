@@ -352,12 +352,10 @@ select:focus, input:focus {
     font-size: 1rem;
     font-weight: 700;
     color: var(--text);
-    cursor: pointer;
     transition: all 0.2s;
     border: 2px solid transparent;
     user-select: none;
 }
-.board-cell:hover { border-color: var(--primary-light); transform: scale(1.05); }
 .board-cell.called {
     background: var(--called-bg);
     color: var(--called);
