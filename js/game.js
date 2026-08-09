@@ -9,48 +9,7 @@ const state = {
     remainingNumbers: [],
     lastNumber: null,
     autoTimer: null,
-    isAutoRunning: false,
-    voicesReady: false
-};
-
-// ===== HINDI NUMBER WORDS =====
-const hindiNumbers = {
-    1:'एक',2:'दो',3:'तीन',4:'चार',5:'पांच',6:'छह',7:'सात',8:'आठ',9:'नौ',10:'दस',
-    11:'ग्यारह',12:'बारह',13:'तेरह',14:'चौदह',15:'पंद्रह',16:'सोलह',17:'सत्रह',
-    18:'अठारह',19:'उन्नीस',20:'बीस',21:'इक्कीस',22:'बाईस',23:'तेईस',24:'चौबीस',
-    25:'पच्चीस',26:'छब्बीस',27:'सत्ताईस',28:'अट्ठाईस',29:'उनतीस',30:'तीस',
-    31:'इकतीस',32:'बत्तीस',33:'तैंतीस',34:'चौंतीस',35:'पैंतीस',36:'छत्तीस',
-    37:'सैंतीस',38:'अड़तीस',39:'उनतालीस',40:'चालीस',41:'इकतालीस',42:'बयालीस',
-    43:'तैंतालीस',44:'चवालीस',45:'पैंतालीस',46:'छियालीस',47:'सैंतालीस',
-    48:'अड़तालीस',49:'उनचास',50:'पचास',51:'इक्यावन',52:'बावन',53:'तिरपन',
-    54:'चौवन',55:'पचपन',56:'छप्पन',57:'सत्तावन',58:'अट्ठावन',59:'उनसठ',
-    60:'साठ',61:'इकसठ',62:'बासठ',63:'तिरसठ',64:'चौंसठ',65:'पैंसठ',66:'छियासठ',
-    67:'सड़सठ',68:'अड़सठ',69:'उनहत्तर',70:'सत्तर',71:'इकहत्तर',72:'बहत्तर',
-    73:'तिहत्तर',74:'चौहत्तर',75:'पचहत्तर',76:'छिहत्तर',77:'सतहत्तर',
-    78:'अठहत्तर',79:'उन्यासी',80:'अस्सी',81:'इक्यासी',82:'बयासी',83:'तिरासी',
-    84:'चौरासी',85:'पचासी',86:'छियासी',87:'सत्तासी',88:'अट्ठासी',89:'नवासी',90:'नब्बे'
-};
-
-// ===== TELUGU NUMBER WORDS =====
-const teluguNumbers = {
-    1:'ఒకటి',2:'రెండు',3:'మూడు',4:'నాలుగు',5:'ఐదు',6:'ఆరు',7:'ఏడు',8:'ఎనిమిది',
-    9:'తొమ్మిది',10:'పది',11:'పదకొండు',12:'పన్నెండు',13:'పదమూడు',14:'పద్నాలుగు',
-    15:'పదిహేను',16:'పదహారు',17:'పదిహేడు',18:'పద్దెనిమిది',19:'పందొమ్మిది',
-    20:'ఇరవై',21:'ఇరవై ఒకటి',22:'ఇరవై రెండు',23:'ఇరవై మూడు',24:'ఇరవై నాలుగు',
-    25:'ఇరవై ఐదు',26:'ఇరవై ఆరు',27:'ఇరవై ఏడు',28:'ఇరవై ఎనిమిది',29:'ఇరవై తొమ్మిది',
-    30:'ముప్పై',31:'ముప్పై ఒకటి',32:'ముప్పై రెండు',33:'ముప్పై మూడు',34:'ముప్పై నాలుగు',
-    35:'ముప్పై ఐదు',36:'ముప్పై ఆరు',37:'ముప్పై ఏడు',38:'ముప్పై ఎనిమిది',39:'ముప్పై తొమ్మిది',
-    40:'నలభై',41:'నలభై ఒకటి',42:'నలభై రెండు',43:'నలభై మూడు',44:'నలభై నాలుగు',
-    45:'నలభై ఐదు',46:'నలభై ఆరు',47:'నలభై ఏడు',48:'నలభై ఎనిమిది',49:'నలభై తొమ్మిది',
-    50:'యాభై',51:'యాభై ఒకటి',52:'యాభై రెండు',53:'యాభై మూడు',54:'యాభై నాలుగు',
-    55:'యాభై ఐదు',56:'యాభై ఆరు',57:'యాభై ఏడు',58:'యాభై ఎనిమిది',59:'యాభై తొమ్మిది',
-    60:'అరవై',61:'అరవై ఒకటి',62:'అరవై రెండు',63:'అరవై మూడు',64:'అరవై నాలుగు',
-    65:'అరవై ఐదు',66:'అరవై ఆరు',67:'అరవై ఏడు',68:'అరవై ఎనిమిది',69:'అరవై తొమ్మిది',
-    70:'డెబ్భై',71:'డెబ్భై ఒకటి',72:'డెబ్భై రెండు',73:'డెబ్భై మూడు',74:'డెబ్భై నాలుగు',
-    75:'డెబ్భై ఐదు',76:'డెబ్భై ఆరు',77:'డెబ్భై ఏడు',78:'డెబ్భై ఎనిమిది',79:'డెబ్భై తొమ్మిది',
-    80:'ఎనభై',81:'ఎనభై ఒకటి',82:'ఎనభై రెండు',83:'ఎనభై మూడు',84:'ఎనభై నాలుగు',
-    85:'ఎనభై ఐదు',86:'ఎనభై ఆరు',87:'ఎనభై ఏడు',88:'ఎనభై ఎనిమిది',89:'ఎనభై తొమ్మిది',
-    90:'తొంభై'
+    isAutoRunning: false
 };
 
 // ===== PERSISTENCE =====
@@ -151,89 +110,43 @@ function changeLanguage() {
     saveGame();
 }
 
-// ===== VOICE INIT =====
-let availableVoices = [];
-function loadVoices() {
-    if ('speechSynthesis' in window) {
-        availableVoices = speechSynthesis.getVoices();
-        state.voicesReady = availableVoices.length > 0;
-    }
-}
-if ('speechSynthesis' in window) {
-    loadVoices();
-    speechSynthesis.onvoiceschanged = loadVoices;
-}
-
 // ===== SPEAK =====
-let onlineAudio = null;
+let currentAudio = null;
 
-function hasVoiceForLang(lang) {
-    if (!availableVoices.length) return null;
-    const exact = availableVoices.find(v => v.lang === lang);
-    if (exact) return exact;
-    const langCode = lang.split('-')[0];
-    return availableVoices.find(v => v.lang.startsWith(langCode)) || null;
-}
-
-// Online TTS fallback (Google Translate engine) so Hindi/Telugu always speak,
-// even when the device has no matching voice installed.
-function speakOnline(text, langCode) {
-    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' +
-        encodeURIComponent(langCode) + '&q=' + encodeURIComponent(text);
-    if (onlineAudio) {
-        onlineAudio.pause();
-        onlineAudio = null;
+// Plays a pre-generated number recording from the site's own audio folder.
+// Same-origin files work on every device (including TV browsers) with no internet needed.
+function playLocalNumber(num, langCode) {
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
     }
-    const audio = new Audio(url);
-    onlineAudio = audio;
-    audio.play().catch(() => {
+    const audio = new Audio('audio/' + langCode + '/' + num + '.mp3');
+    currentAudio = audio;
+    audio.play().catch(function () {
         document.getElementById('audioWarning').classList.add('show');
     });
 }
 
 function speakNumber(num) {
-    let text;
     const lang = state.language;
-    if (lang === 'hi-IN') {
-        text = hindiNumbers[num] || String(num);
-    } else if (lang === 'te-IN') {
-        text = teluguNumbers[num] || String(num);
-    } else {
-        text = String(num);
-    }
 
-    const voice = hasVoiceForLang(lang);
-
-    // 1) Use installed device voice when available (best quality)
-    if ('speechSynthesis' in window && voice) {
-        speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = 0.85;
-        utterance.pitch = 1;
-        utterance.voice = voice;
-        speechSynthesis.speak(utterance);
-        return;
-    }
-
-    // 2) Hindi/Telugu with no installed voice → online fallback
+    // Hindi / Telugu → pre-recorded audio
     if (lang === 'hi-IN' || lang === 'te-IN') {
-        speakOnline(text, lang === 'hi-IN' ? 'hi' : 'te');
+        playLocalNumber(num, lang === 'hi-IN' ? 'hi' : 'te');
         return;
     }
 
-    // 3) English via browser default voice
-    if ('speechSynthesis' in window) {
-        speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = 0.85;
-        utterance.pitch = 1;
-        speechSynthesis.speak(utterance);
+    // English → browser text-to-speech
+    if (!('speechSynthesis' in window)) {
+        document.getElementById('audioWarning').classList.add('show');
         return;
     }
-
-    document.getElementById('audioWarning').classList.add('show');
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(String(num));
+    utterance.lang = lang;
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+    speechSynthesis.speak(utterance);
 }
 
 // ===== ANIMATE LAST NUMBER =====
