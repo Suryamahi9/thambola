@@ -7,7 +7,7 @@ const BATCH_KEY = 'tambola-batches-v2';
 function generateTicket() {
     for (let attempt = 0; attempt < 300; attempt++) {
         const grid = tryGenerateTicket();
-        if (grid && isValidSpacing(grid)) return grid;
+        if (grid && isValidTicket(grid)) return grid;
     }
     return tryGenerateTicket();
 }
@@ -85,8 +85,58 @@ function tryGenerateTicket() {
     return grid;
 }
 
-// Reject tickets where a row has 3+ consecutive numbers (looks bunched).
-function isValidSpacing(grid) {
+// ===== FULL TAMBOLA TICKET RULES =====
+// Every generated ticket must satisfy ALL of these:
+//   1. 3 rows x 9 columns grid
+//   2. Exactly 15 numbers
+//   3. Exactly 5 numbers in every row
+//   4. At least 1 and at most 3 numbers in every column
+//   5. No column may be completely empty
+//   6. Column 1 = 1-9, col 2 = 10-19 ... col 9 = 80-90
+//   7. Numbers in a column are sorted top-to-bottom
+//   8. Numbers in a row are sorted left-to-right
+//   9. No number repeats on a ticket
+//  10. Aesthetic: no row has 3+ consecutive filled cells (looks bunched)
+function isValidTicket(grid) {
+    let total = 0;
+    const colCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    for (let r = 0; r < 3; r++) {
+        let rowCount = 0;
+        let prev = 0;
+        for (let c = 0; c < 9; c++) {
+            const v = grid[r][c];
+            if (v !== null) {
+                total++;
+                rowCount++;
+                colCounts[c]++;
+                // Rule 8 + 9: rows ascending left-to-right (no repeats)
+                if (v <= prev) return false;
+                prev = v;
+            }
+        }
+        // Rule 3: exactly 5 per row
+        if (rowCount !== 5) return false;
+    }
+
+    // Rule 2: exactly 15 numbers
+    if (total !== 15) return false;
+
+    for (let c = 0; c < 9; c++) {
+        // Rules 4 & 5: 1-3 per column, none empty
+        if (colCounts[c] < 1 || colCounts[c] > 3) return false;
+        // Rule 7: column sorted top-to-bottom
+        let prev = 0;
+        for (let r = 0; r < 3; r++) {
+            const v = grid[r][c];
+            if (v !== null) {
+                if (v <= prev) return false;
+                prev = v;
+            }
+        }
+    }
+
+    // Rule 10: no 3+ consecutive filled cells in a row
     for (let r = 0; r < 3; r++) {
         let run = 0;
         for (let c = 0; c < 9; c++) {
@@ -94,6 +144,7 @@ function isValidSpacing(grid) {
             if (run >= 3) return false;
         }
     }
+
     return true;
 }
 
