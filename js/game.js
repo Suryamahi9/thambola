@@ -100,9 +100,15 @@ function initBoard() {
         cell.className = 'board-cell';
         cell.id = 'cell-' + i;
         cell.textContent = i;
-        cell.onclick = () => manualMark(i);
         board.appendChild(cell);
     }
+    // Event delegation: one listener on the board — reliable even if cells change.
+    board.onclick = (e) => {
+        const cell = e.target.closest('.board-cell');
+        if (cell) {
+            manualMark(parseInt(cell.id.split('-')[1], 10));
+        }
+    };
 }
 
 function restoreBoard() {
@@ -352,13 +358,32 @@ function downloadReportPDF() {
         return;
     }
 
-    const { jsPDF } = window.jspdf || {};
-    if (!jsPDF) {
-        printReportFallback();
+    if (window.jspdf && window.jspdf.jsPDF) {
+        buildPDFReport();
         return;
     }
 
-    const doc = new jsPDF();
+    showToast('Loading PDF engine…');
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+    s.onload = () => {
+        if (window.jspdf && window.jspdf.jsPDF) {
+            buildPDFReport();
+        } else {
+            showToast('PDF engine unavailable — opening print view');
+            printReportFallback();
+        }
+    };
+    s.onerror = () => {
+        showToast('PDF engine unavailable — opening print view');
+        printReportFallback();
+    };
+    document.head.appendChild(s);
+}
+
+function buildPDFReport() {
+
+    const doc = new window.jspdf.jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 16;
     const contentWidth = pageWidth - margin * 2;
@@ -586,6 +611,13 @@ function init() {
     updateStats();
     renderHistory();
     saveGame();
+
+    const modal = document.getElementById('resetModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeResetModal();
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', init);
