@@ -74,8 +74,11 @@ function tryGenerateTicket() {
             [pool[i], pool[j]] = [pool[j], pool[i]];
         }
         const nums = pool.slice(0, count).sort((a, b) => a - b);
-        for (let i = 0; i < colRows[col].length; i++) {
-            grid[colRows[col][i]][col] = nums[i];
+        // Assign in ascending row order so each column reads top-to-bottom
+        // (e.g. 68 above 70, never 70 above 68).
+        const rows = colRows[col].slice().sort((a, b) => a - b);
+        for (let i = 0; i < rows.length; i++) {
+            grid[rows[i]][col] = nums[i];
         }
     }
 
