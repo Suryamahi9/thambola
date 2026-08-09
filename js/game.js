@@ -289,6 +289,45 @@ function copyCalled() {
     );
 }
 
+// ===== DOWNLOAD GAME REPORT =====
+function downloadReport() {
+    if (state.calledNumbers.length === 0) {
+        showToast('No numbers called yet');
+        return;
+    }
+
+    const langNames = { 'en-IN': 'English', 'hi-IN': 'Hindi', 'te-IN': 'Telugu' };
+    const lines = [];
+    lines.push('=======================================');
+    lines.push('          TAMBOLA GAME REPORT');
+    lines.push('=======================================');
+    lines.push('');
+    lines.push('Generated: ' + new Date().toLocaleString());
+    lines.push('Mode: ' + (state.mode === 'auto' ? 'Auto' : 'Manual'));
+    lines.push('Audio Language: ' + (langNames[state.language] || state.language));
+    lines.push('Status: ' + (state.remainingNumbers.length === 0 ? 'Game Over' : 'In Progress'));
+    lines.push('');
+    lines.push('Numbers Called: ' + state.calledNumbers.length + ' / 90');
+    lines.push('Remaining: ' + state.remainingNumbers.length);
+    lines.push('Last Number: ' + (state.lastNumber || '—'));
+    lines.push('');
+    lines.push('Called Numbers (in order):');
+    lines.push(state.calledNumbers.join(', '));
+    lines.push('');
+    lines.push('=======================================');
+
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tambola-report-' + new Date().toISOString().slice(0, 10) + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('Report downloaded');
+}
+
 // ===== AUTO MODE =====
 function toggleAuto() {
     if (state.isAutoRunning) {
