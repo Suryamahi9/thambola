@@ -328,6 +328,121 @@ function downloadReport() {
     showToast('Report downloaded');
 }
 
+// ===== DOWNLOAD PDF REPORT =====
+function buildReportText() {
+    const langNames = { 'en-IN': 'English', 'hi-IN': 'Hindi', 'te-IN': 'Telugu' };
+    return {
+        meta: [
+            'Mode: ' + (state.mode === 'auto' ? 'Auto' : 'Manual'),
+            'Audio Language: ' + (langNames[state.language] || state.language),
+            'Status: ' + (state.remainingNumbers.length === 0 ? 'Game Over' : 'In Progress')
+        ],
+        stats: [
+            'Numbers Called: ' + state.calledNumbers.length + ' / 90',
+            'Remaining: ' + state.remainingNumbers.length,
+            'Last Number: ' + (state.lastNumber || '—')
+        ],
+        numbers: state.calledNumbers.join(', ')
+    };
+}
+
+function downloadReportPDF() {
+    if (state.calledNumbers.length === 0) {
+        showToast('No numbers called yet');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf || {};
+    if (!jsPDF) {
+        printReportFallback();
+        return;
+    }
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 16;
+    const contentWidth = pageWidth - margin * 2;
+
+    doc.setFillColor(108, 43, 217);
+    doc.rect(0, 0, pageWidth, 34, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.text('TAMBOLA GAME REPORT', pageWidth / 2, 16, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(new Date().toLocaleString(), pageWidth / 2, 25, { align: 'center' });
+
+    const { meta, stats, numbers } = buildReportText();
+
+    let y = 46;
+    doc.setTextColor(30, 27, 46);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('Game Details', margin, y);
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    meta.forEach(line => {
+        doc.text(line, margin, y);
+        y += 6;
+    });
+
+    y += 6;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('Statistics', margin, y);
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    stats.forEach(line => {
+        doc.text(line, margin, y);
+        y += 6;
+    });
+
+    y += 6;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('Called Numbers (in order)', margin, y);
+    y += 7;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    const lines = doc.splitTextToSize(numbers, contentWidth);
+    lines.forEach(line => {
+        if (y > 285) {
+            doc.addPage();
+            y = 20;
+        }
+        doc.text(line, margin, y);
+        y += 6;
+    });
+
+    doc.save('tambola-report-' + new Date().toISOString().slice(0, 10) + '.pdf');
+    showToast('PDF report downloaded');
+}
+
+function printReportFallback() {
+    const { meta, stats, numbers } = buildReportText();
+    const w = window.open('', '_blank');
+    if (!w) {
+        showToast('Popup blocked — use Download Report (txt) instead');
+        return;
+    }
+    w.document.write('<!DOCTYPE html><html><head><title>Tambola Game Report</title>' +
+        '<style>body{font-family:Segoe UI,Arial,sans-serif;padding:24px;color:#1E1B2E;}' +
+        'h1{color:#6C2BD9;border-bottom:3px solid #6C2BD9;padding-bottom:8px;}' +
+        'h2{color:#6C2BD9;margin-top:20px;}li{margin:4px 0;}.nums{max-width:700px;}</style>' +
+        '</head><body><h1>Tambola Game Report</h1>' +
+        '<p><strong>' + new Date().toLocaleString() + '</strong></p>' +
+        '<h2>Game Details</h2><ul>' + meta.map(l => '<li>' + l + '</li>').join('') + '</ul>' +
+        '<h2>Statistics</h2><ul>' + stats.map(l => '<li>' + l + '</li>').join('') + '</ul>' +
+        '<h2>Called Numbers (in order)</h2><p class="nums">' + numbers + '</p>' +
+        '<script>window.onload=function(){window.print();}<\/script>' +
+        '</body></html>');
+    w.document.close();
+}
+
 // ===== AUTO MODE =====
 function toggleAuto() {
     if (state.isAutoRunning) {
