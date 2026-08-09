@@ -444,8 +444,9 @@ function fillNames() {
     const grids = generateUniqueGrids(count);
 
     for (let t = 0; t < count; t++) {
-        const name = names[t] || 'Player ' + (t + 1);
-        container.appendChild(buildTicketElement(grids[t], name, t, count));
+        const base = names[t] || 'Player';
+        const label = base + '-' + (t + 1);
+        container.appendChild(buildTicketElement(grids[t], label, t, count));
     }
 
     saveBatch(grids);
