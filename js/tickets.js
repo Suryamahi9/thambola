@@ -2,7 +2,17 @@
 const BATCH_KEY = 'tambola-batches-v1';
 
 // ---- 3x9 ticket grid with exactly 15 numbers, 5 per row, columns by tens ----
+// Rows are filled with randomized tie-breaks so numbers spread evenly
+// (no stacked blocks, no long consecutive runs) for a clean ticket look.
 function generateTicket() {
+    for (let attempt = 0; attempt < 300; attempt++) {
+        const grid = tryGenerateTicket();
+        if (grid && isValidSpacing(grid)) return grid;
+    }
+    return tryGenerateTicket();
+}
+
+function tryGenerateTicket() {
     const grid = [
         [null, null, null, null, null, null, null, null, null],
         [null, null, null, null, null, null, null, null, null],
@@ -27,14 +37,20 @@ function generateTicket() {
         }
     }
 
-    // Assign rows (each row gets exactly 5)
+    // Assign rows (each row gets exactly 5). Shuffle tie-breaks so rows
+    // interleave instead of stacking vertically.
     const rowCounts = [0, 0, 0];
     const colRows = [[], [], [], [], [], [], [], [], []];
-    const colOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8].sort((a, b) => colCounts[b] - colCounts[a]);
+    const colOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        .sort((a, b) => colCounts[b] - colCounts[a] || Math.random() - 0.5);
 
     for (const col of colOrder) {
         const count = colCounts[col];
         const avail = [0, 1, 2].filter(r => rowCounts[r] < 5);
+        for (let i = avail.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [avail[i], avail[j]] = [avail[j], avail[i]];
+        }
         avail.sort((a, b) => rowCounts[a] - rowCounts[b]);
         const chosen = avail.slice(0, count);
         for (const r of chosen) {
@@ -44,7 +60,7 @@ function generateTicket() {
     }
 
     if (rowCounts[0] !== 5 || rowCounts[1] !== 5 || rowCounts[2] !== 5) {
-        return generateTicket();
+        return null;
     }
 
     // Fill numbers
@@ -64,6 +80,18 @@ function generateTicket() {
     }
 
     return grid;
+}
+
+// Reject tickets where a row has 3+ consecutive numbers (looks bunched).
+function isValidSpacing(grid) {
+    for (let r = 0; r < 3; r++) {
+        let run = 0;
+        for (let c = 0; c < 9; c++) {
+            run = grid[r][c] === null ? 0 : run + 1;
+            if (run >= 3) return false;
+        }
+    }
+    return true;
 }
 
 // ---- Batch persistence ----
