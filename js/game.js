@@ -165,12 +165,33 @@ if ('speechSynthesis' in window) {
 }
 
 // ===== SPEAK =====
-function speakNumber(num) {
-    if (!('speechSynthesis' in window)) {
-        document.getElementById('audioWarning').classList.add('show');
-        return;
-    }
+let onlineAudio = null;
 
+function hasVoiceForLang(lang) {
+    if (!availableVoices.length) return null;
+    const exact = availableVoices.find(v => v.lang === lang);
+    if (exact) return exact;
+    const langCode = lang.split('-')[0];
+    return availableVoices.find(v => v.lang.startsWith(langCode)) || null;
+}
+
+// Online TTS fallback (Google Translate engine) so Hindi/Telugu always speak,
+// even when the device has no matching voice installed.
+function speakOnline(text, langCode) {
+    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' +
+        encodeURIComponent(langCode) + '&q=' + encodeURIComponent(text);
+    if (onlineAudio) {
+        onlineAudio.pause();
+        onlineAudio = null;
+    }
+    const audio = new Audio(url);
+    onlineAudio = audio;
+    audio.play().catch(() => {
+        document.getElementById('audioWarning').classList.add('show');
+    });
+}
+
+function speakNumber(num) {
     let text;
     const lang = state.language;
     if (lang === 'hi-IN') {
@@ -181,23 +202,38 @@ function speakNumber(num) {
         text = String(num);
     }
 
-    speechSynthesis.cancel();
+    const voice = hasVoiceForLang(lang);
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    utterance.rate = 0.85;
-    utterance.pitch = 1;
-
-    const matchingVoice = availableVoices.find(v => v.lang === lang);
-    if (matchingVoice) {
-        utterance.voice = matchingVoice;
-    } else {
-        const langCode = lang.split('-')[0];
-        const partialMatch = availableVoices.find(v => v.lang.startsWith(langCode));
-        if (partialMatch) utterance.voice = partialMatch;
+    // 1) Use installed device voice when available (best quality)
+    if ('speechSynthesis' in window && voice) {
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = 0.85;
+        utterance.pitch = 1;
+        utterance.voice = voice;
+        speechSynthesis.speak(utterance);
+        return;
     }
 
-    speechSynthesis.speak(utterance);
+    // 2) Hindi/Telugu with no installed voice → online fallback
+    if (lang === 'hi-IN' || lang === 'te-IN') {
+        speakOnline(text, lang === 'hi-IN' ? 'hi' : 'te');
+        return;
+    }
+
+    // 3) English via browser default voice
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = 0.85;
+        utterance.pitch = 1;
+        speechSynthesis.speak(utterance);
+        return;
+    }
+
+    document.getElementById('audioWarning').classList.add('show');
 }
 
 // ===== ANIMATE LAST NUMBER =====
