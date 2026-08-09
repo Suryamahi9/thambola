@@ -438,7 +438,7 @@ select:focus, input:focus {
     text-overflow: ellipsis;
     max-width: 65%;
 }
-.ticket-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; margin-top: auto; }
+.ticket-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; }
 .ticket-cell {
     aspect-ratio: 1.1;
     display: flex;
@@ -451,7 +451,7 @@ select:focus, input:focus {
     background: #fff;
     color: #1E1B2E;
 }
-.ticket-cell.empty { background: #F3F0FF; border-color: #F3F0FF; }
+.ticket-cell.empty { background: #F3F0FF; border-color: #E5E0F0; }
 
 /* ===== INFO GRID / SECTIONS ===== */
 .section-block { margin-bottom: 28px; }

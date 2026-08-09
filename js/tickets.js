@@ -1,5 +1,5 @@
 // ===== TAMBOLA TICKET GENERATOR =====
-const BATCH_KEY = 'tambola-batches-v1';
+const BATCH_KEY = 'tambola-batches-v2';
 
 // ---- 3x9 ticket grid with exactly 15 numbers, 5 per row, columns by tens ----
 // Rows are filled with randomized tie-breaks so numbers spread evenly
@@ -94,6 +94,41 @@ function isValidSpacing(grid) {
     return true;
 }
 
+// Serialize a grid so we can detect duplicate tickets.
+function gridKey(grid) {
+    return grid.map(row => row.map(v => v === null ? '' : v).join('|')).join('/');
+}
+
+// Generate `count` tickets, guaranteed to be all different.
+function generateUniqueGrids(count) {
+    const seen = new Set();
+    const grids = [];
+    let attempts = 0;
+    const maxAttempts = Math.max(800, count * 120);
+
+    while (grids.length < count && attempts < maxAttempts) {
+        attempts++;
+        const grid = generateTicket();
+        const key = gridKey(grid);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        grids.push(grid);
+    }
+
+    // Fallback: force-unique by re-rolling until all distinct (very rare).
+    let guard = 0;
+    while (grids.length < count && guard < 500) {
+        guard++;
+        const grid = generateTicket();
+        const key = gridKey(grid);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        grids.push(grid);
+    }
+
+    return grids;
+}
+
 // ---- Batch persistence ----
 function loadBatches() {
     try {
@@ -154,24 +189,14 @@ function generateTickets() {
     const container = document.getElementById('ticketsContainer');
     container.innerHTML = '';
 
-    const grids = [];
-    for (let t = 0; t < count; t++) {
-        grids.push(generateTicket());
-    }
+    const grids = generateUniqueGrids(count);
 
-    if (name) {
-        // All tickets get the base name
-        grids.forEach((grid, i) => {
-            container.appendChild(buildTicketElement(grid, name, i, count));
-        });
-    } else {
-        grids.forEach((grid, i) => {
-            container.appendChild(buildTicketElement(grid, null, i, count));
-        });
-    }
+    grids.forEach((grid, i) => {
+        container.appendChild(buildTicketElement(grid, name || null, i, count));
+    });
 
     saveBatch(grids);
-    showToast('Generated ' + count + ' tickets');
+    showToast('Generated ' + count + ' unique tickets');
 }
 
 // ---- Fill names from a name list (space separated) ----
@@ -186,12 +211,14 @@ function fillNames() {
     const container = document.getElementById('ticketsContainer');
     container.innerHTML = '';
 
+    const grids = generateUniqueGrids(count);
+
     for (let t = 0; t < count; t++) {
         const name = names[t] || 'Player ' + (t + 1);
-        const grid = generateTicket();
-        container.appendChild(buildTicketElement(grid, name, t, count));
+        container.appendChild(buildTicketElement(grids[t], name, t, count));
     }
 
+    saveBatch(grids);
     showToast('Tickets with names generated');
 }
 
