@@ -20,12 +20,19 @@
                 <div class="card">
                     <div class="card-title">🎫 Printable Tickets</div>
                     <p class="card-sub">
-                        Generate standard 3×9 Tambola tickets (15 numbers each). Add a player name to each ticket if you like.
+                        Generate standard 3×9 Tambola tickets (15 numbers each), or a <strong>Full Set (6-book)</strong> where all 90 numbers appear exactly once across the set.
                     </p>
 
                     <div class="ticket-controls no-print">
                         <div class="control-group">
-                            <label>How many tickets</label>
+                            <label>Ticket mode</label>
+                            <div class="toggle-group" style="min-width:220px;">
+                                <button class="toggle-btn active" id="modeRandom" onclick="setTicketMode('random')">Random</button>
+                                <button class="toggle-btn" id="modeFullset" onclick="setTicketMode('fullset')">Full Set (6-book)</button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label id="countLabel">How many tickets</label>
                             <input type="number" class="ticket-input" id="ticketCount" value="6" min="1" max="30">
                         </div>
                         <div class="control-group">
