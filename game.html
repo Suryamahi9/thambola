@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Play Tambola | Number Caller with Voice</title>
-    <meta name="description" content="Play Tambola online — manual or auto number caller with voice in English, Hindi and Telugu. Live 1-90 board, stats, and auto-save.">
+    <meta name="description" content="Play Tambola online — manual or auto number caller with voice in English, Hindi, Telugu, Tamil, Kannada & Marathi. Live 1-90 board, win patterns, stats, and auto-save.">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -47,7 +47,34 @@
                                 <option value="en-IN">English (India)</option>
                                 <option value="hi-IN">हिंदी (Hindi)</option>
                                 <option value="te-IN">తెలుగు (Telugu)</option>
+                                <option value="ta-IN">தமிழ் (Tamil)</option>
+                                <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
+                                <option value="mr-IN">मराठी (Marathi)</option>
                             </select>
+                        </div>
+                        <div class="control-group" id="voiceGroup" style="display:none;">
+                            <label>Voice</label>
+                            <select id="voiceSelect" onchange="changeVoice()"></select>
+                        </div>
+                        <div class="control-group" id="rateGroup" style="display:none;">
+                            <label>Speech Rate · <span id="rateValue">0.85x</span></label>
+                            <input type="range" id="rateRange" min="0.5" max="1.5" step="0.05" value="0.85" oninput="updateRate()">
+                        </div>
+                        <div class="control-group">
+                            <label>Lucky 7 Highlight</label>
+                            <label class="switch">
+                                <input type="checkbox" id="luckyToggle" checked onchange="toggleLucky()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="control-group" style="flex:1 1 100%;">
+                            <label>Presets</label>
+                            <div class="preset-row">
+                                <input type="text" id="presetName" placeholder="Preset name (e.g. Kids Party)">
+                                <select id="presetSelect" onchange="loadPreset()"></select>
+                                <button class="btn btn-secondary btn-sm" onclick="saveCurrentPreset()">💾 Save</button>
+                                <button class="btn btn-secondary btn-sm" onclick="deletePreset()">🗑 Delete</button>
+                            </div>
                         </div>
                     </div>
 
@@ -55,15 +82,21 @@
                         <button class="btn btn-primary" id="nextBtn" onclick="callNext()">▶ Next Number</button>
                         <button class="btn btn-accent" id="autoBtn" onclick="toggleAuto()" style="display:none;">⏵ Start Auto</button>
                         <button class="btn btn-secondary" onclick="repeatLast()">🔊 Repeat Last</button>
+                        <button class="btn btn-secondary" onclick="houseCall()">🎲 House Call</button>
                         <button class="btn btn-secondary" onclick="copyCalled()">📋 Copy Numbers</button>
-                        <button class="btn btn-secondary" onclick="downloadReport()">📄 Download Report</button>
-                        <button class="btn btn-secondary" onclick="downloadReportPDF()">📕 Download PDF</button>
+                        <button class="btn btn-secondary" onclick="shareResults()">📤 Share</button>
+                        <button class="btn btn-secondary" onclick="downloadReport()">📄 Report</button>
+                        <button class="btn btn-secondary" onclick="downloadReportPDF()">📕 PDF</button>
                         <button class="btn btn-danger" onclick="confirmReset()">↻ Reset Game</button>
                     </div>
+
+                    <div class="auto-countdown" id="autoCountdown"></div>
 
                     <div class="audio-warning" id="audioWarning">
                         ⚠️ Audio not available. Try Chrome, Edge, or Safari. Some devices may not support voice features.
                     </div>
+
+                    <div class="win-banner" id="winBanner"></div>
                 </div>
             </section>
 
@@ -94,10 +127,29 @@
             <section class="section-block">
                 <div class="card">
                     <div class="card-title">🔢 Tambola Board (1 – 90)</div>
+                    <div class="active-tickets-note" id="activeTicketsNote" style="display:none;">
+                        🎫 Game is using <strong>tickets from your last batch</strong> — win patterns are checked per ticket.
+                    </div>
                     <div class="board" id="board"></div>
                     <div class="tip-box">
                         💡 The board is display-only — numbers are drawn randomly by the caller (Next Number or Auto mode). Use 🔊 Repeat Last to hear a number again.
                     </div>
+                </div>
+            </section>
+
+            <!-- PATTERNS -->
+            <section class="section-block">
+                <div class="card">
+                    <div class="card-title">🏆 Win Patterns</div>
+                    <div class="patterns-panel" id="patternsPanel"></div>
+                </div>
+            </section>
+
+            <!-- HOUSE CALLS -->
+            <section class="section-block" id="houseCallsCard" style="display:none;">
+                <div class="card">
+                    <div class="card-title">🎲 House Calls</div>
+                    <div class="history-list" id="houseCallList"></div>
                 </div>
             </section>
 
